@@ -18,19 +18,19 @@ object Effects {
   /**
    * The behavior spawned a named child with the given behavior (and optionally specific props)
    */
-  final case class Spawned[T](behavior: Behavior[T], childName: String, props: Props = Props.empty) extends Effect
+  final case class Spawned[T](behavior: Behavior[T], childName: String, props: Props = Props.empty)(val ref: ActorRef[T] = null) extends Effect
   /**
    * The behavior spawned an anonymous child with the given behavior (and optionally specific props)
    */
-  final case class SpawnedAnonymous[T](behavior: Behavior[T], props: Props = Props.empty) extends Effect
+  final case class SpawnedAnonymous[T](behavior: Behavior[T], props: Props = Props.empty)(val ref: ActorRef[T] = null) extends Effect
   /**
    * The behavior spawned an anonymous adapter, through `ctx.spawnMessageAdapter`
    */
-  final case object SpawnedAdapter extends Effect
+  final case class SpawnedAdapter[T]()(val ref: ActorRef[T] = null) extends Effect
   /**
    * The behavior spawned a named adapter, through `ctx.spawnMessageAdapter`
    */
-  final case class SpawnedNamedAdapter(name: String) extends Effect
+  final case class SpawnedNamedAdapter[T](name: String)(val ref: ActorRef[T] = null) extends Effect
   /**
    * The behavior stopped `childName`
    */

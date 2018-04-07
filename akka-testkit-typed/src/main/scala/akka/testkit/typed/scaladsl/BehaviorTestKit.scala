@@ -5,7 +5,7 @@
 package akka.testkit.typed.scaladsl
 
 import akka.actor.{ Address, RootActorPath }
-import akka.actor.typed.{ Behavior, Signal }
+import akka.actor.typed.{ Behavior, Signal, ActorRef }
 import akka.annotation.DoNotInherit
 import akka.testkit.typed.Effect
 import akka.testkit.typed.internal.BehaviorTestKitImpl
@@ -51,6 +51,11 @@ trait BehaviorTestKit[T] {
    * spawned
    */
   def childInbox[U](name: String): TestInbox[U]
+
+  /**
+   * Get the [[akka.actor.typed.Behavior]] testkit for the given child [[akka.actor.typed.ActorRef]].
+   */
+  def childTestKit[U](child: ActorRef[U]): BehaviorTestKit[U]
 
   /**
    * The self inbox contains messages the behavior sent to `ctx.self`

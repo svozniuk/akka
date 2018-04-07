@@ -19,27 +19,51 @@ object Effects {
   /**
    * The behavior spawned a named child with the given behavior with no specific props
    */
-  def spawned[T](behavior: Behavior[T], childName: String): Effect = Spawned(behavior, childName)
+  def spawned[T](behavior: Behavior[T], childName: String): Effect = Spawned(behavior, childName)()
+  /**
+   * The behavior spawned a named child with the given behavior with no specific props
+   */
+  def spawned[T](behavior: Behavior[T], childName: String, ref: ActorRef[T]): Effect = Spawned(behavior, childName)(ref)
   /**
    * The behavior spawned a named child with the given behavior and specific props
    */
-  def spawned[T](behavior: Behavior[T], childName: String, props: Props): Effect = Spawned(behavior, childName, props)
+  def spawned[T](behavior: Behavior[T], childName: String, props: Props): Effect = Spawned(behavior, childName, props)()
+  /**
+   * The behavior spawned a named child with the given behavior and specific props
+   */
+  def spawned[T](behavior: Behavior[T], childName: String, props: Props, ref: ActorRef[T]): Effect = Spawned(behavior, childName, props)(ref)
   /**
    * The behavior spawned an anonymous child with the given behavior with no specific props
    */
-  def spawnedAnonymous(behavior: Behavior[_]): Effect = SpawnedAnonymous(behavior)
+  def spawnedAnonymous[T](behavior: Behavior[T]): Effect = SpawnedAnonymous(behavior)()
+  /**
+   * The behavior spawned an anonymous child with the given behavior with no specific props
+   */
+  def spawnedAnonymous[T](behavior: Behavior[T], ref: ActorRef[T]): Effect = SpawnedAnonymous(behavior)(ref)
   /**
    * The behavior spawned an anonymous child with the given behavior with specific props
    */
-  def spawnedAnonymous(behavior: Behavior[_], props: Props): Effect = SpawnedAnonymous(behavior, props)
+  def spawnedAnonymous[T](behavior: Behavior[T], props: Props): Effect = SpawnedAnonymous(behavior, props)()
+  /**
+   * The behavior spawned an anonymous child with the given behavior with specific props
+   */
+  def spawnedAnonymous[T](behavior: Behavior[T], props: Props, ref: ActorRef[T]): Effect = SpawnedAnonymous(behavior, props)(ref)
   /**
    * The behavior spawned an anonymous adapter, through `ctx.spawnMessageAdapter`
    */
-  def spawnedAdapter: Effect = SpawnedAdapter
+  def spawnedAdapter(): Effect = SpawnedAdapter[Any]()()
+  /**
+   * The behavior spawned an anonymous adapter, through `ctx.spawnMessageAdapter`
+   */
+  def spawnedAdapter[T](ref: ActorRef[T]): Effect = SpawnedAdapter()(ref)
   /**
    * The behavior spawned a named adapter, through `ctx.spawnMessageAdapter`
    */
-  def spawnedNamedAdapter(name: String): Effect = SpawnedNamedAdapter(name)
+  def spawnedNamedAdapter(name: String): Effect = SpawnedNamedAdapter[Any](name)()
+  /**
+   * The behavior spawned a named adapter, through `ctx.spawnMessageAdapter`
+   */
+  def spawnedNamedAdapter[T](name: String, ref: ActorRef[T]): Effect = SpawnedNamedAdapter(name)(ref)
   /**
    * The behavior stopped `childName`
    */

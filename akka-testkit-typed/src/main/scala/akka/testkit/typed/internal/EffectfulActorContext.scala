@@ -23,24 +23,25 @@ import scala.concurrent.duration.{ Duration, FiniteDuration }
 
   override def spawnAnonymous[U](behavior: Behavior[U], props: Props = Props.empty): ActorRef[U] = {
     val ref = super.spawnAnonymous(behavior, props)
-    effectQueue.offer(SpawnedAnonymous(behavior, props))
+    effectQueue.offer(SpawnedAnonymous(behavior, props)(ref))
     ref
   }
 
   override def spawnMessageAdapter[U](f: U ⇒ T): ActorRef[U] = {
     val ref = super.spawnMessageAdapter(f)
-    effectQueue.offer(SpawnedAdapter)
+    effectQueue.offer(SpawnedAdapter()(ref))
     ref
   }
 
   override def spawnMessageAdapter[U](f: U ⇒ T, name: String): ActorRef[U] = {
     val ref = super.spawnMessageAdapter(f, name)
-    effectQueue.offer(SpawnedAdapter)
+    effectQueue.offer(SpawnedNamedAdapter(name)(ref))
     ref
   }
   override def spawn[U](behavior: Behavior[U], name: String, props: Props = Props.empty): ActorRef[U] = {
-    effectQueue.offer(Spawned(behavior, name, props))
-    super.spawn(behavior, name, props)
+    val ref = super.spawn(behavior, name, props)
+    effectQueue.offer(Spawned(behavior, name, props)(ref))
+    ref
   }
   override def stop[U](child: ActorRef[U]): Unit = {
     effectQueue.offer(Stopped(child.path.name))

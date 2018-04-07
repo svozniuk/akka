@@ -59,7 +59,7 @@ class SyncTestingExampleSpec extends WordSpec with Matchers {
       //#test-child
       val testKit = BehaviorTestKit(myBehavior)
       testKit.run(CreateChild("child"))
-      testKit.expectEffect(Spawned(childActor, "child"))
+      testKit.expectEffect(Spawned(childActor, "child")())
       //#test-child
     }
 
@@ -67,7 +67,7 @@ class SyncTestingExampleSpec extends WordSpec with Matchers {
       //#test-anonymous-child
       val testKit = BehaviorTestKit(myBehavior)
       testKit.run(CreateAnonymousChild)
-      testKit.expectEffect(SpawnedAnonymous(childActor))
+      testKit.expectEffect(SpawnedAnonymous(childActor)())
       //#test-anonymous-child
     }
 
