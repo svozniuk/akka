@@ -204,7 +204,7 @@ class BehaviorTestKitSpec extends WordSpec with Matchers {
 
   "BehaviorTestKit’s child actor support" must {
     "allow retrieving and killing" in {
-      val testkit = BehaviorTestKit(Father.init())
+      val testkit = BehaviorTestKit(Father.init)
       val i = TestInbox[ActorRef[String]]()
       val h = TestInbox[String]()
       testkit.run(SpawnSession(i.ref, h.ref))
@@ -232,7 +232,7 @@ class BehaviorTestKitSpec extends WordSpec with Matchers {
       testkit.run(SpawnAndWatchUnwatch("hello"))
       val child = testkit.childInbox("hello").ref
       testkit.retrieveAllEffects() should be(Seq(
-        Spawned(Child.initial, "hello", Props.empty),
+        Spawned(Child.initial, "hello", Props.empty)(),
         Watched(child),
         Unwatched(child)
       ))
@@ -243,7 +243,7 @@ class BehaviorTestKitSpec extends WordSpec with Matchers {
       testkit.run(SpawnAndWatchWith("hello"))
       val child = testkit.childInbox("hello").ref
       testkit.retrieveAllEffects() should be(Seq(
-        Spawned(Child.initial, "hello", Props.empty),
+        Spawned(Child.initial, "hello", Props.empty)(),
         Watched(child)
       ))
     }
