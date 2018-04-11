@@ -67,7 +67,7 @@ trait ExtensionsImpl extends Extensions { self: ActorSystem[_] ⇒
   final override def hasExtension(ext: ExtensionId[_ <: Extension]): Boolean = findExtension(ext) != null
 
   final override def extension[T <: Extension](ext: ExtensionId[T]): T = findExtension(ext) match {
-    case null ⇒ throw new IllegalArgumentException("Trying to get non-registered extension [" + ext + "]")
+    case null ⇒ throw new IllegalArgumentException(s"Trying to get non-registered extension [$ext]")
     case some ⇒ some.asInstanceOf[T]
   }
 
@@ -83,7 +83,7 @@ trait ExtensionsImpl extends Extensions { self: ActorSystem[_] ⇒
       case null ⇒ try { // Signal was successfully sent
         // Create and initialize the extension
         ext.createExtension(self) match {
-          case null ⇒ throw new IllegalStateException("Extension instance created as 'null' for extension [" + ext + "]")
+          case null ⇒ throw new IllegalStateException(s"Extension instance created as 'null' for extension [$ext]")
           case instance ⇒
             // Replace our in process signal with the initialized extension
             extensions.replace(ext, inProcessOfRegistration, instance)

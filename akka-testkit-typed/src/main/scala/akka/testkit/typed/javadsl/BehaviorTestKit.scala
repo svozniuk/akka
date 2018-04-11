@@ -14,12 +14,12 @@ object BehaviorTestKit {
    * JAVA API
    */
   def create[T](initialBehavior: Behavior[T], name: String): BehaviorTestKit[T] =
-    new BehaviorTestKitImpl[T](name, initialBehavior)
+    new BehaviorTestKitImpl[T](name, initialBehavior, Map.empty)
   /**
    * JAVA API
    */
   def create[T](initialBehavior: Behavior[T]): BehaviorTestKit[T] =
-    new BehaviorTestKitImpl[T]("testkit", initialBehavior)
+    new BehaviorTestKitImpl[T]("testkit", initialBehavior, Map.empty)
 
 }
 

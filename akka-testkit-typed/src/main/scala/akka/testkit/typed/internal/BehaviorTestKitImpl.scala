@@ -10,7 +10,6 @@ import akka.actor.typed.{ Behavior, PostStop, Signal }
 import akka.annotation.InternalApi
 import akka.testkit.typed.Effect
 import akka.testkit.typed.scaladsl.Effects._
-
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 import scala.collection.immutable
@@ -18,16 +17,27 @@ import scala.reflect.ClassTag
 import scala.util.control.Exception.Catcher
 import scala.util.control.NonFatal
 
+import akka.actor.typed.Extension
+import akka.actor.typed.ExtensionId
+
 /**
  * INTERNAL API
  */
 @InternalApi
-private[akka] final class BehaviorTestKitImpl[T](_name: String, _initialBehavior: Behavior[T])
+private[akka] final class BehaviorTestKitImpl[T](_name: String, _initialBehavior: Behavior[T],
+                                                 _extensions: Map[ExtensionId[_], Extension])
   extends akka.testkit.typed.javadsl.BehaviorTestKit[T]
   with akka.testkit.typed.scaladsl.BehaviorTestKit[T] {
 
   // really this should be private, make so when we port out tests that need it
-  private[akka] val ctx = new EffectfulActorContext[T](_name)
+  private[akka] val ctx = {
+    val c = new EffectfulActorContext[T](_name)
+    _extensions.foreach {
+      case (extId: ExtensionId[Extension] @unchecked, extImpl) ⇒
+        c.system.asInstanceOf[ActorSystemStub].registerExtension(extId, extImpl)
+    }
+    c
+  }
 
   private var currentUncanonical = _initialBehavior
   private var current = Behavior.validateAsInitial(Behavior.start(_initialBehavior, ctx))

@@ -7,12 +7,20 @@ package akka.actor.typed.receptionist
 import akka.actor.typed.{ ActorRef, ActorSystem, Extension, ExtensionId }
 import akka.actor.typed.internal.receptionist._
 import akka.annotation.DoNotInherit
-
 import scala.collection.JavaConverters._
 import scala.concurrent.duration._
 import scala.reflect.ClassTag
 
-class Receptionist(system: ActorSystem[_]) extends Extension {
+import akka.annotation.InternalApi
+
+abstract class Receptionist extends Extension {
+  def ref: ActorRef[Receptionist.Command]
+}
+
+/**
+ * INTERNAL API
+ */
+@InternalApi private[akka] class ReceptionistImpl(system: ActorSystem[_]) extends Receptionist {
 
   private def hasCluster: Boolean = {
     // FIXME: replace with better indicator that cluster is enabled
@@ -98,7 +106,7 @@ abstract class ServiceKey[T] extends AbstractServiceKey { key ⇒
  * The receptionist is easiest accessed through the system: [[ActorSystem.receptionist]]
  */
 object Receptionist extends ExtensionId[Receptionist] {
-  def createExtension(system: ActorSystem[_]): Receptionist = new Receptionist(system)
+  def createExtension(system: ActorSystem[_]): Receptionist = new ReceptionistImpl(system)
   def get(system: ActorSystem[_]): Receptionist = apply(system)
 
   /**

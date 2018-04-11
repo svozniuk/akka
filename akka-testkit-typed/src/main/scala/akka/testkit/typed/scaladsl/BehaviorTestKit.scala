@@ -8,15 +8,42 @@ import akka.actor.typed.{ Behavior, Signal }
 import akka.annotation.DoNotInherit
 import akka.testkit.typed.Effect
 import akka.testkit.typed.internal.BehaviorTestKitImpl
-
 import scala.collection.immutable
 import scala.reflect.ClassTag
 
+import akka.actor.typed.Extension
+import akka.actor.typed.ExtensionId
+import akka.annotation.InternalApi
+
+object BehaviorTestKitSetup {
+  val DefaultName = "testkit"
+
+  def apply[T](initialBehavior: Behavior[T]) =
+    new BehaviorTestKitSetup(initialBehavior, DefaultName, Map.empty)
+}
+
+class BehaviorTestKitSetup[T] private (
+  val initialBehavior:          Behavior[T],
+  val name:                     String,
+  private[akka] val extensions: Map[ExtensionId[_], Extension]) {
+
+  def withName(name: String): BehaviorTestKitSetup[T] =
+    new BehaviorTestKitSetup(initialBehavior, name, extensions)
+
+  def withExtension[A <: Extension](extId: ExtensionId[A], extImpl: A): BehaviorTestKitSetup[T] =
+    new BehaviorTestKitSetup(initialBehavior, name, extensions.updated(extId, extImpl))
+}
+
 object BehaviorTestKit {
+
+  def apply[T](setup: BehaviorTestKitSetup[T]): BehaviorTestKit[T] =
+    new BehaviorTestKitImpl[T](setup.name, setup.initialBehavior, setup.extensions)
+
   def apply[T](initialBehavior: Behavior[T], name: String): BehaviorTestKit[T] =
-    new BehaviorTestKitImpl[T](name, initialBehavior)
+    new BehaviorTestKitImpl[T](name, initialBehavior, Map.empty)
+
   def apply[T](initialBehavior: Behavior[T]): BehaviorTestKit[T] =
-    apply(initialBehavior, "testkit")
+    new BehaviorTestKitImpl[T](BehaviorTestKitSetup.DefaultName, initialBehavior, Map.empty)
 
 }
 
