@@ -4,7 +4,6 @@
 
 package akka.testkit.typed.javadsl
 
-import akka.actor.{ Address, RootActorPath }
 import akka.actor.typed.{ Behavior, Signal, ActorRef }
 import akka.annotation.DoNotInherit
 import akka.testkit.typed.Effect
@@ -13,12 +12,14 @@ import akka.testkit.typed.internal.BehaviorTestKitImpl
 import java.util.concurrent.ThreadLocalRandom
 
 object BehaviorTestKit {
+  import akka.testkit.typed.scaladsl.TestInbox.address
+
   /**
    * JAVA API
    */
   def create[T](initialBehavior: Behavior[T], name: String): BehaviorTestKit[T] = {
     val uid = ThreadLocalRandom.current().nextInt()
-    new BehaviorTestKitImpl(RootActorPath(Address("akka.actor.typed.inbox", "anonymous")) / name withUid (uid), initialBehavior)
+    new BehaviorTestKitImpl(address / name withUid (uid), initialBehavior)
   }
   /**
    * JAVA API

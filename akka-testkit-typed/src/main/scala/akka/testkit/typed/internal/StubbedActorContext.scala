@@ -7,7 +7,8 @@ package akka.testkit.typed.internal
 import akka.actor.typed._
 import akka.actor.typed.internal._
 import akka.actor.typed.internal.adapter.AbstractLogger
-import akka.actor.{ ActorPath, InvalidMessageException, Address, RootActorPath }
+import akka.testkit.typed.scaladsl.TestInbox
+import akka.actor.{ ActorPath, InvalidMessageException }
 import akka.annotation.InternalApi
 import akka.event.Logging
 import akka.event.Logging.LogLevel
@@ -133,7 +134,7 @@ final case class CapturedLogEvent(logLevel: LogLevel, message: String,
   val path: ActorPath) extends ActorContextImpl[T] {
 
   def this(name: String) = {
-    this(RootActorPath(Address("akka.actor.typed.inbox", "anonymous")) / name withUid rnd().nextInt())
+    this(TestInbox.address / name withUid rnd().nextInt())
   }
 
   /**
@@ -161,7 +162,6 @@ final case class CapturedLogEvent(logLevel: LogLevel, message: String,
     _children get name match {
       case Some(_) ⇒ throw untyped.InvalidActorNameException(s"actor name $name is already taken")
       case None ⇒
-        // FIXME correct child path for the Inbox ref
         val btk = new BehaviorTestKitImpl[U](path / name withUid rnd().nextInt(), behavior)
         _children += name → btk
         btk.ctx.self

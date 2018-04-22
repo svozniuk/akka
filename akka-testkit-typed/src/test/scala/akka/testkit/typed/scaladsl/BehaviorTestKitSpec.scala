@@ -7,7 +7,7 @@ package akka.testkit.typed.scaladsl
 import akka.Done
 import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.{ ActorRef, Behavior, Props }
-import akka.testkit.typed.scaladsl.Effects.{ Spawned, SpawnedAdapter, SpawnedAnonymous, SpawnedNamedAdapter, Watched, Unwatched }
+import akka.testkit.typed.scaladsl.Effects.{ Spawned, SpawnedAnonymousAdapter, SpawnedAnonymous, SpawnedAdapter, Watched, Unwatched }
 import akka.testkit.typed.scaladsl.BehaviorTestKitSpec.{ Child, Father }
 import akka.testkit.typed.scaladsl.BehaviorTestKitSpec.Father._
 import org.scalatest.{ Matchers, WordSpec }
@@ -149,14 +149,14 @@ class BehaviorTestKitSpec extends WordSpec with Matchers {
       val testkit = BehaviorTestKit[Father.Command](Father.init)
       testkit.run(SpawnChildren(2))
       val effects = testkit.retrieveAllEffects()
-      effects should contain only (Spawned(Child.initial, "child0")(null), Spawned(Child.initial, "child1", Props.empty)(null))
+      effects should contain only (Spawned(Child.initial, "child0"), Spawned(Child.initial, "child1", Props.empty))
     }
 
     "create children when props specified and record effects" in {
       val testkit = BehaviorTestKit[Father.Command](Father.init)
       testkit.run(SpawnChildrenWithProps(2, props))
       val effects = testkit.retrieveAllEffects()
-      effects should contain only (Spawned(Child.initial, "child0", props)(null), Spawned(Child.initial, "child1", props)(null))
+      effects should contain only (Spawned(Child.initial, "child0", props), Spawned(Child.initial, "child1", props))
     }
   }
 
@@ -165,7 +165,7 @@ class BehaviorTestKitSpec extends WordSpec with Matchers {
       val testkit = BehaviorTestKit[Father.Command](Father.init)
       testkit.run(SpawnAnonymous(2))
       val effects = testkit.retrieveAllEffects()
-      effects shouldBe Seq(SpawnedAnonymous(Child.initial, Props.empty)(null), SpawnedAnonymous(Child.initial, Props.empty)(null))
+      effects shouldBe Seq(SpawnedAnonymous(Child.initial, Props.empty), SpawnedAnonymous(Child.initial, Props.empty))
     }
 
     "create children when props specified and record effects" in {
@@ -173,7 +173,7 @@ class BehaviorTestKitSpec extends WordSpec with Matchers {
 
       testkit.run(SpawnAnonymousWithProps(2, props))
       val effects = testkit.retrieveAllEffects()
-      effects shouldBe Seq(SpawnedAnonymous(Child.initial, props)(null), SpawnedAnonymous(Child.initial, props)(null))
+      effects shouldBe Seq(SpawnedAnonymous(Child.initial, props), SpawnedAnonymous(Child.initial, props))
     }
   }
 
@@ -182,14 +182,14 @@ class BehaviorTestKitSpec extends WordSpec with Matchers {
       val testkit = BehaviorTestKit[Father.Command](Father.init)
       testkit.run(SpawnAdapter)
       val effects = testkit.retrieveAllEffects()
-      effects shouldBe Seq(SpawnedAdapter()())
+      effects shouldBe Seq(SpawnedAnonymousAdapter())
     }
 
     "create adapters with name and record effects" in {
       val testkit = BehaviorTestKit[Father.Command](Father.init)
       testkit.run(SpawnAdapterWithName("adapter"))
       val effects = testkit.retrieveAllEffects()
-      effects shouldBe Seq(SpawnedNamedAdapter("adapter")())
+      effects shouldBe Seq(SpawnedAdapter("adapter"))
     }
   }
 
@@ -232,7 +232,7 @@ class BehaviorTestKitSpec extends WordSpec with Matchers {
       testkit.run(SpawnAndWatchUnwatch("hello"))
       val child = testkit.childInbox("hello").ref
       testkit.retrieveAllEffects() should be(Seq(
-        Spawned(Child.initial, "hello", Props.empty)(),
+        Spawned(Child.initial, "hello", Props.empty),
         Watched(child),
         Unwatched(child)
       ))
@@ -243,7 +243,7 @@ class BehaviorTestKitSpec extends WordSpec with Matchers {
       testkit.run(SpawnAndWatchWith("hello"))
       val child = testkit.childInbox("hello").ref
       testkit.retrieveAllEffects() should be(Seq(
-        Spawned(Child.initial, "hello", Props.empty)(),
+        Spawned(Child.initial, "hello", Props.empty),
         Watched(child)
       ))
     }
